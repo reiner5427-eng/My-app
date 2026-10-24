@@ -1,0 +1,39 @@
+name: Deploy Pandora Rivals
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check game syntax and logic
+        run: |
+          node --check game.js
+          node tests/test-game.cjs
+      - uses: actions/configure-pages@v5
+      - name: Prepare game files
+        run: |
+          mkdir -p public/vendor
+          cp index.html style.css game.js public/
+          cp vendor/three.min.js vendor/THREE-LICENSE.txt public/vendor/
+          touch public/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - id: deployment
+        uses: actions/deploy-pages@v4
