@@ -3,7 +3,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 const root=path.resolve(__dirname,'..'),THREE=require(path.join(root,'vendor/three.min.js'));
 class Element{constructor(){this.hidden=false;this.style={setProperty(){}};this.classList={toggle(){},add(){},remove(){}};this.children=[];this.dataset={};this.textContent='';this.listeners={};}appendChild(e){this.children.push(e);}setAttribute(){}addEventListener(k,fn){this.listeners[k]=fn;}remove(){}showModal(){this.open=true;}close(){this.open=false;}}
 const els={},events={};const difficulties=['easy','normal','hard'].map(d=>{const e=new Element();e.dataset.difficulty=d;return e;});
-const doc={getElementById:id=>els[id]??=(new Element()),createElement:()=>new Element(),querySelector:()=>els.timerClass??=new Element(),querySelectorAll:s=>s==='.character-card'?els.characterCards.children:difficulties,addEventListener:(k,f)=>events[k]=f,exitPointerLock(){},hidden:false};
+const doc={getElementById:id=>els[id]??=(new Element()),createElement:()=>new Element(),querySelector:()=>els.timerClass??=new Element(),querySelectorAll:s=>s==='[data-control]'?[]:s==='.character-card'?els.characterCards.children:difficulties,addEventListener:(k,f)=>events[k]=f,exitPointerLock(){},hidden:false};
 const fakeRenderer=class{setPixelRatio(){}setSize(){}render(){}};
 const ctx={THREE:{...THREE,WebGLRenderer:fakeRenderer},document:doc,devicePixelRatio:1,innerWidth:1280,innerHeight:800,performance:{now:()=>0},location:{search:'?test'},URLSearchParams,console,localStorage:{getItem(){return null;},setItem(){}},addEventListener:(k,f)=>events[k]=f,requestAnimationFrame:fn=>ctx.frame=fn};
 ctx.window=ctx;vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(root,'game.js'),'utf8'),ctx);

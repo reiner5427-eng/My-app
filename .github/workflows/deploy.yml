@@ -25,6 +25,7 @@ jobs:
         run: |
           node --check game.js
           node tests/test-game.cjs
+          node tests/test-mobile.cjs
       - uses: actions/configure-pages@v5
       - name: Prepare game files
         run: |
